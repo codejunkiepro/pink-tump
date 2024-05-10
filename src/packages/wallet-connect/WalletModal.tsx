@@ -1,22 +1,61 @@
 import type { WalletName } from "@solana/wallet-adapter-base";
 import { WalletReadyState } from "@solana/wallet-adapter-base";
+import { getCsrfToken, signIn, signOut, useSession } from "next-auth/react";
 import type { Wallet } from "@solana/wallet-adapter-react";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import type { FC, MouseEvent } from "react";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import bs58 from "bs58";
+
 import { Collapse } from "./Collapse";
 import { WalletListItem } from "./WalletListItem";
 
+import { Header, Payload, SIWS } from "@web3auth/sign-in-with-solana";
+
 import { Credenza, CredenzaContent } from "@/components/ui/credenza";
+import { SigninMessage } from "@/lib/utils/SigninMessage";
 
 export interface WalletModalProps {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+const domain = window.location.host;
+const origin = window.location.origin;
+
 export const WalletModal: FC<WalletModalProps> = ({ open, setOpen }) => {
-  const { wallets, select } = useWallet();
+  const { wallets, select, publicKey, signMessage } = useWallet();
   const [expanded, setExpanded] = useState(false);
+  const [signing, setSigning] = useState(false);
+  const { connection } = useConnection();
+
+  useEffect(() => {
+    if (publicKey && !signing) {
+      // console.log(domain, origin)
+      signInWithSolana(publicKey.toString());
+      console.log(publicKey.toString());
+    }
+  }, [publicKey]);
+
+  const signInWithSolana = async (key: string) => {
+    const csrf = "nonce";
+    setSigning(true);
+    console.log(publicKey?.toString());
+    if (!publicKey || !csrf || !signMessage) return;
+    const message = new SigninMessage({
+      domain: origin,
+      publicKey: publicKey?.toBase58(),
+      statement:
+        "Signing this message will prove you have onwership of the selected account",
+      nonce: csrf,
+    });
+
+    const data = new TextEncoder().encode(message.prepare());
+    const signature = await signMessage(data);
+    const serializedSignature = bs58.encode(signature);
+    setSigning(false);
+    console.log(serializedSignature);
+  };
 
   const [listedWallets, collapsedWallets] = useMemo(() => {
     const installed: Wallet[] = [];
