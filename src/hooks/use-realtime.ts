@@ -1,6 +1,7 @@
 import { useToast } from "@/components/ui/use-toast";
 import { CandleDto, TokenDto, TradeDto } from "@/lib/data/dtos";
 import useTokenStore from "@/store/use-token-store";
+import useTradeStore from "@/store/use-trade-store";
 import { useEffect } from "react";
 import useWebSocket from "react-use-websocket";
 
@@ -13,6 +14,7 @@ enum EventTypes {
 export const useRealtime = () => {
   const { toast } = useToast();
   const addToken = useTokenStore((state) => state.addAtStart);
+  const addTrades = useTradeStore((state) => state.addAtStart);
 
   const { sendMessage, lastJsonMessage, readyState } = useWebSocket(
     "wss://pump-stream.fly.dev",
@@ -33,13 +35,15 @@ export const useRealtime = () => {
       },
     }
   );
+  // console.log()
   useEffect(() => {
     if (!lastJsonMessage) return;
     const message = lastJsonMessage as any;
     switch (message.name) {
       case EventTypes.Swap:
-        console.log("Swap", message.data);
-
+        addTrades(parseTradeDto(message.data.tradeDto))
+        console.log(message.data.tradeDto)
+        addToken(parseTokenDto(message.data.tokenDto))
         break;
       case EventTypes.CurveCreated:
         addToken(parseTokenDto(message.data));
