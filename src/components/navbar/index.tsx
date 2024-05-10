@@ -36,16 +36,16 @@ export const Navbar = () => {
   }
 
   // call the interval after a set of time for updation
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     if (liveActions) {
-  //       console.log("I'm executed");
-  //       updatearray();
-  //       console.log(liveActions);
-  //     }
-  //   }, 2000);
-  //   return () => clearInterval(interval);
-  // }, [liveActions]);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (liveActions) {
+        console.log("I'm executed");
+        updatearray();
+        console.log(liveActions);
+      }
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [liveActions]);
 
   return (
     <header className="w-[-webkit-fill-available] absolute bg-card flex flex-col-reverse gap-4 md:gap-0 md:flex-row  px-[1rem] justify-between items-center align-middle py-6 z-1">
