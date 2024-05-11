@@ -5,7 +5,7 @@ import { HomeView } from "@/views/home-view";
 
 export default async function Page() {
   const tokens = await getTokens();
-  console.log("tokens", tokens);
+  console.log("tokensasdf", tokens);
 
   return <HomeView tokens={tokens} />;
 }

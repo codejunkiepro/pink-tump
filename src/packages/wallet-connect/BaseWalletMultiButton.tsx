@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { WalletModal } from "./WalletModal";
+import EditProfile from "@/components/edit-profile";
 
 type Props = ButtonProps & {
   labels: Omit<
@@ -24,11 +25,14 @@ type Props = ButtonProps & {
     copied: string;
     "change-wallet": string;
     disconnect: string;
+    "edit-profile": string;
   };
 };
 
 export function BaseWalletMultiButton({ children, labels, ...props }: Props) {
   const [walletModalOpen, setWalletModalOpen] = useState(false);
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+
   const {
     buttonState,
     onConnect,
@@ -59,6 +63,7 @@ export function BaseWalletMultiButton({ children, labels, ...props }: Props) {
   return (
     <>
       <WalletModal open={walletModalOpen} setOpen={setWalletModalOpen} />
+      <EditProfile open={profileModalOpen} setOpen={setProfileModalOpen} />
       <DropdownMenu
         open={menuOpen}
         onOpenChange={(value) => setMenuOpen(value)}
@@ -101,6 +106,13 @@ export function BaseWalletMultiButton({ children, labels, ...props }: Props) {
         </DropdownMenuTrigger>
 
         <DropdownMenuContent>
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={async () => setProfileModalOpen(true)}
+            role="menuitem"
+          >
+            {labels["edit-profile"]}
+          </DropdownMenuItem>
           {publicKey ? (
             <DropdownMenuItem
               className="cursor-pointer"

@@ -6,14 +6,13 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import type { FC, MouseEvent } from "react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import bs58 from "bs58";
-
-import { Collapse } from "./Collapse";
-import { WalletListItem } from "./WalletListItem";
-
-import { Header, Payload, SIWS } from "@web3auth/sign-in-with-solana";
+// import api from "@/lib/utils/api";
 
 import { Credenza, CredenzaContent } from "@/components/ui/credenza";
 import { SigninMessage } from "@/lib/utils/SigninMessage";
+
+import { Collapse } from "./Collapse";
+import { WalletListItem } from "./WalletListItem";
 
 export interface WalletModalProps {
   open: boolean;
@@ -24,18 +23,28 @@ const domain = window.location.host;
 const origin = window.location.origin;
 
 export const WalletModal: FC<WalletModalProps> = ({ open, setOpen }) => {
-  const { wallets, select, publicKey, signMessage } = useWallet();
+  const { wallets, select, publicKey, signMessage, connected } = useWallet();
   const [expanded, setExpanded] = useState(false);
   const [signing, setSigning] = useState(false);
   const { connection } = useConnection();
 
   useEffect(() => {
-    if (publicKey && !signing) {
+    if (publicKey && connected) {
       // console.log(domain, origin)
-      signInWithSolana(publicKey.toString());
+      // signInWithSolana(publicKey.toString());
+      createUser();
       console.log(publicKey.toString());
     }
-  }, [publicKey]);
+  }, [connected]);
+
+  const createUser = useCallback(() => {
+    // console.log('sersre')
+    // api
+    //   .post("/auth", {
+    //     wallet: publicKey?.toString(),
+    //   })
+    //   .then((res) => console.log(res));
+  }, [connected]);
 
   const signInWithSolana = async (key: string) => {
     const csrf = "nonce";
