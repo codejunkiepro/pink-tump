@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { ChangeEvent, useState, useRef } from "react";
 import {
   Credenza,
   CredenzaBody,
@@ -7,6 +7,7 @@ import {
   CredenzaTitle,
 } from "./ui/credenza";
 import Image from "next/image";
+import { useEffect } from "react";
 
 import Avatar from "@/assets/avatar.png";
 
@@ -15,6 +16,35 @@ interface IEditProfile {
   setOpen: (op: boolean) => void;
 }
 function EditProfile({ open, setOpen }: IEditProfile) {
+  const [profilePhoto, setProfilePhoto] = useState<File | null>();
+  const [preview, setPreview] = useState<string | ArrayBuffer | null>();
+  const avatarRef = useRef<HTMLInputElement>(null);
+
+  const handleProfilePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files ? e.target.files[0] : null;
+    if (file && file.type.substr(0, 5) === "image") {
+      setProfilePhoto(file);
+    } else {
+      setProfilePhoto(null);
+    }
+  };
+
+  const handleClick = () => {
+    avatarRef.current?.click();
+  }
+
+  useEffect(() => {
+    if (profilePhoto) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result);
+      };
+      reader.readAsDataURL(profilePhoto);
+    } else {
+      setPreview(null);
+    }
+  }, [profilePhoto]);
+
   //   const [open, setOpen] = useState(true);
   return (
     <Credenza open={open} onOpenChange={(op) => setOpen(op)}>
@@ -25,7 +55,24 @@ function EditProfile({ open, setOpen }: IEditProfile) {
         <CredenzaBody>
           <div className="flex mb-4">
             <div className="mr-3">Profile Photo</div>
-            <Image src={Avatar} alt="avatar" width={50} height={50} />
+            <div className="relative">
+
+            <Image
+              src={preview ? (preview as string) : Avatar}
+              alt="avatar"
+              width={50}
+              height={50}
+              onClick={handleClick}
+              className="cursor-pointer"
+            />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleProfilePhoto(e)}
+              style={{display: 'none'}}
+              ref={avatarRef}
+            />
+            </div>
           </div>
           <div className="flex mb-4">
             <div className="w-[30%]">Username</div>
