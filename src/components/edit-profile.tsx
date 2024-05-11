@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import {
   Credenza,
   CredenzaBody,
@@ -31,7 +31,7 @@ function EditProfile({ open, setOpen }: IEditProfile) {
 
   const handleClick = () => {
     avatarRef.current?.click();
-  }
+  };
 
   useEffect(() => {
     if (profilePhoto) {
@@ -56,22 +56,21 @@ function EditProfile({ open, setOpen }: IEditProfile) {
           <div className="flex mb-4">
             <div className="mr-3">Profile Photo</div>
             <div className="relative">
-
-            <Image
-              src={preview ? (preview as string) : Avatar}
-              alt="avatar"
-              width={50}
-              height={50}
-              onClick={handleClick}
-              className="cursor-pointer"
-            />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => handleProfilePhoto(e)}
-              style={{display: 'none'}}
-              ref={avatarRef}
-            />
+              <Image
+                src={preview ? (preview as string) : Avatar}
+                alt="avatar"
+                width={50}
+                height={50}
+                onClick={handleClick}
+                className="cursor-pointer"
+              />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleProfilePhoto(e)}
+                style={{ display: "none" }}
+                ref={avatarRef}
+              />
             </div>
           </div>
           <div className="flex mb-4">
