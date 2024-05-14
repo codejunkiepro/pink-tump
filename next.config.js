@@ -4,11 +4,15 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
   webpack: (config) => {
     config.resolve.alias["crypto"] = "crypto-browserify";
     config.resolve.alias["stream"] = "stream-browserify";
     config.resolve.alias["vm"] = "vm-browserify";
-
+    config.externals.push('pino-pretty');
+    config.externals.push('http');
+    config.externals.push('https');
+    config.externals.push('zlib');
     return config;
   },
   logging: {

@@ -9,6 +9,15 @@ import {
 import { WalletAdapterNetwork, WalletError } from "@solana/wallet-adapter-base";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { clusterApiUrl } from "@solana/web3.js";
+import {
+  LedgerWalletAdapter,
+  PhantomWalletAdapter,
+  CloverWalletAdapter,
+  SolflareWalletAdapter,
+  SolongWalletAdapter,
+  // SolflareWalletAdapter,
+  TorusWalletAdapter,
+} from "@solana/wallet-adapter-wallets";
 
 import { WalletMultiButton } from "@/packages/wallet-connect";
 import "@/packages/wallet-connect/style.css";
@@ -21,14 +30,30 @@ const endpoints = {
 };
 
 function SolanaProvider({ children }: { children: React.ReactNode }) {
-  const endpoint = "";
   const onError = useCallback((error: WalletError) => {
     console.error(error);
   }, []);
 
+  const network = WalletAdapterNetwork.Devnet;
+
+  // const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+
+  const wallets = useMemo(
+    () => [
+      new PhantomWalletAdapter(),
+      new CloverWalletAdapter(),
+      new SolflareWalletAdapter(),
+      new TorusWalletAdapter(),
+      new LedgerWalletAdapter(),
+      new SolongWalletAdapter({ network }),
+      // new SolletExtensionWalletAdapter({ network }),
+    ],
+    [network]
+  );
+
   return (
     <ConnectionProvider endpoint={endpoints.devnet}>
-      <WalletProvider wallets={[]} onError={onError} autoConnect>
+      <WalletProvider wallets={wallets} onError={onError} autoConnect>
         <WalletModalProvider>{children}</WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
